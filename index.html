@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IF Media Department — Stories That Stay With You</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080A0F; font-family: 'Segoe UI', system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 6px; } 
+  ::-webkit-scrollbar-track { background: #0D1017; }
+  ::-webkit-scrollbar-thumb { background: #2E3A50; border-radius: 3px; }
+  ul { list-style: disc; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const C = {
+  ink:     "#080A0F",
+  deep:    "#0D1017",
+  panel:   "#131720",
+  card:    "#181E2A",
+  border:  "#222A38",
+  amber:   "#D4940A",
+  amberLt: "#F2C14E",
+  amberDim:"#7A5510",
+  cream:   "#EDE8DC",
+  muted:   "#6B7888",
+  dim:     "#3A4455",
+  white:   "#F5F2EC",
+  red:     "#C94030",
+  teal:    "#1E8A7A",
+  violet:  "#7A4EC4",
+  sky:     "#2474B8",
+  moss:    "#4A8A50",
+  rose:    "#B84870",
+};
+
+const SERIES = [
+  {
+    id: "S1", title: "Silent Hands", tagline: "Actions that need no words.",
+    theme: "Kindness & Sacrifice", format: "No dialogue · 3–5 min",
+    accentColor: C.amber, icon: "🤲",
+    synopsis: "Each episode follows a single character performing one silent, selfless act — a street vendor giving his last meal away, a child guiding a blind elder across a busy road. Zero narration. Zero subtitles. Pure image.",
+    episodes: ["The Meal","The Umbrella","The Seat","The Letter","The Shoes"],
+    moral: "Generosity doesn't need an audience.",
+    inspiredBy: "The MUTE Series · Pixar's Bao · La Luna",
+    productionNotes: "Shoot in golden hour. Extreme close-ups on hands and eyes. Ambient city sound — no score until the final beat.",
+  },
+  {
+    id: "S2", title: "One Choice", tagline: "Every fork in the road defines you.",
+    theme: "Integrity & Consequence", format: "Minimal dialogue · 5–8 min",
+    accentColor: C.red, icon: "⚖️",
+    synopsis: "A single moral fork-in-the-road shown in two timelines. What happens if the character chooses right vs. wrong? Splits into a dual-track reveal — same character, two futures, four minutes each.",
+    episodes: ["The Bribe","The Shortcut","The Lie","The Open Door","The Empty Chair"],
+    moral: "Character is what you do when no one is watching.",
+    inspiredBy: "Sliding Doors · The Route (2024, Babak Beigi) · Timecode (Cannes 2016)",
+    productionNotes: "Split-screen or colour-graded parallel timelines. Muted palette for wrong choice, warm tones for right. Same locations, different emotional light.",
+  },
+  {
+    id: "S3", title: "Enough", tagline: "Joy lives in what you already have.",
+    theme: "Contentment & Gratitude", format: "Voiceover + visual · 4–6 min",
+    accentColor: C.moss, icon: "🌱",
+    synopsis: "Documentary-style portraits of everyday people — a market woman at dawn, a farmer counting a small harvest, a student with one textbook — who carry profound joy in ordinary life. Earthy, unhurried cinematography.",
+    episodes: ["The Garden","The Morning","The Small House","The Old Bicycle","One Pot"],
+    moral: "Wealth is gratitude in motion.",
+    inspiredBy: "Humans of New York (film) · Africa Direct (YouTube) · Afrocritik 2025 picks",
+    productionNotes: "Handheld observational camera. Natural light only. Subjects speak directly to lens in final beat. Warm grade — teal shadows, amber highlights.",
+  },
+  {
+    id: "S4", title: "Bridges", tagline: "The distance between us is smaller than fear.",
+    theme: "Reconciliation & Empathy", format: "Light dialogue · 5–7 min",
+    accentColor: C.sky, icon: "🌉",
+    synopsis: "Two strangers or estranged people from opposite sides of a divide — generation gaps, old grudges, cultural distance — are placed in one location and must simply be present with each other. No forced resolution.",
+    episodes: ["Father & Son","Old Rivals","The Neighbour","Different Tongues","The Funeral"],
+    moral: "Understanding begins with presence, not words.",
+    inspiredBy: "Together Apart (Lagos 2024) · Rearview (Johannesburg 2025) · O (Rúnarsson, 2024)",
+    productionNotes: "Two-shot compositions that gradually tighten. Long silences held on screen. Score enters only when the characters share physical space willingly.",
+  },
+  {
+    id: "S5", title: "The Long Way", tagline: "There are no shortcuts to what matters.",
+    theme: "Patience & Craftsmanship", format: "Visual journey · 4–6 min",
+    accentColor: C.violet, icon: "🛤️",
+    synopsis: "A character tries the shortcut and it collapses. Then commits to the honest, slow path. Time-lapse sequences compress weeks of real effort into a visual poem about what it costs to build something true.",
+    episodes: ["The Harvest","The Craft","The Climb","The Repair","The Well"],
+    moral: "What you rush past, you never really own.",
+    inspiredBy: "The Craftsman (UK Film Review 2025) · Wavelength · Pixar's Piper",
+    productionNotes: "Use real craftspeople, farmers, builders — not actors. Time-lapse the slow work. Score: single instrument building into ensemble only at completion.",
+  },
+  {
+    id: "S6", title: "Mirrors", tagline: "Life gives back exactly what you send into it.",
+    theme: "Karma & Ripple Effect", format: "Symmetrical narrative · 3–5 min",
+    accentColor: C.rose, icon: "🪞",
+    synopsis: "An act — kind or cruel — ripples out through strangers across time. A chain of cause and effect, each link a different person, until the original actor encounters their own echo in an unexpected form.",
+    episodes: ["The Return","The Chain","The Echo","Full Circle","What You Left Behind"],
+    moral: "Every action is a seed. You meet its fruit.",
+    inspiredBy: "Axe Forgets (African proverb, UK 2025) · She Stays (2024) · Afrocritik 'Food for the Soul'",
+    productionNotes: "Each episode is exactly 4 minutes. Recurring visual motif — an object passed from hand to hand — links episodes across the series.",
+  },
+  {
+    id: "S7", title: "Before Dawn", tagline: "What the city sees before it wakes up.",
+    theme: "Hidden Labour & Dignity", format: "Observational · 3–5 min",
+    accentColor: C.teal, icon: "🌅",
+    synopsis: "Silent portraits of people who work while the rest of the world sleeps — night security guards, bakers, street sweepers, nurses at the end of a shift. No narrative. Just a face, the work, and the first light.",
+    episodes: ["4AM","The Night Guard","First Loaves","The Ward","Sweep"],
+    moral: "Dignity doesn't announce itself.",
+    inspiredBy: "NOWNESS visual essay style · A Wanderer's World (UK 2025) · African folklore of unseen labour",
+    productionNotes: "Shoot 4–6am only. No artificial lighting. Extreme restraint: one location per episode, minimal cuts. Let boredom become poetry.",
+  },
+];
+
+const PILLARS = [
+  { label: "Image First", detail: "If it can't be understood without words, rewrite the shot." },
+  { label: "≤ 8 Minutes", detail: "Every second must earn its place. No filler, no padding." },
+  { label: "Universal Emotion", detail: "Local faces and settings. Feelings that cross every border." },
+  { label: "Series Format", detail: "4–6 episodes per series. Build loyalty, not one-off virality." },
+  { label: "Real Locations", detail: "Streets, markets, kitchens, fields. Not sets. Not studios." },
+  { label: "Multi-Platform", detail: "YouTube full cut · Reels/TikTok 60s extract · WhatsApp premieres." },
+];
+
+const PHASES = [
+  { label: "Pilot", period: "Month 1–2", color: C.amber, steps: ["Produce S1·Ep1 'The Meal' (Silent Hands)", "Soft-launch on YouTube + Instagram Reels", "Gather 500 organic reactions before next shoot"] },
+  { label: "Series 1 Drop", period: "Month 3–5", color: C.red, steps: ["Release all 5 eps of Silent Hands, one per week", "Run a 'What did you see?' caption challenge on Instagram", "Tease Series 2 (One Choice) in final episode end card"] },
+  { label: "Catalogue Build", period: "Month 6–12", color: C.sky, steps: ["Launch Series 2 + 3 in parallel", "Establish Tuesday drop schedule", "First branded / sponsored episode for aligned brand"] },
+  { label: "Festival Circuit", period: "Year 2", color: C.teal, steps: ["Submit best episodes to AMVCA, Abuja IFF, Afrocritik picks", "Apply for Vimeo Staff Pick and Africa Direct (YouTube)", "Pitch anthology to Showmax / Netflix Africa short film arm"] },
+];
+
+const REFS = [
+  { title: "The MUTE Series", origin: "UK · Andy Lambert", tag: "No-Dialogue Template", note: "18 films — no dialogue, no camera moves, one shot. The proof that constraint is creative fuel." },
+  { title: "Pixar Shorts (Bao, La Luna, Piper)", origin: "USA · Pixar", tag: "Visual Emotion", note: "Master class in zero-dialogue storytelling that makes grown adults cry in 6 minutes." },
+  { title: "NOWNESS", origin: "YouTube / Web", tag: "Cinematic Style", note: "Pure visual essays — cinematography and sound, no narration. The aesthetic north star for IF Media." },
+  { title: "The Route (2024)", origin: "Iran · Babak Beigi", tag: "Silent Moral Drama", note: "19-minute animated short, no dialogue, about guilt and moral awakening. Festival award winner." },
+  { title: "Rearview (2025)", origin: "South Africa · Chris Djuma", tag: "African Moral Urgency", note: "Fuses action with moral stakes. Asks: how far will you go to help a stranger? Congolese refugee lead." },
+  { title: "Africa Direct", origin: "YouTube · Al Jazeera", tag: "African Voice Benchmark", note: "African stories by African filmmakers. The quality bar and distribution model to study and beat." },
+  { title: "Timecode (Cannes 2016)", origin: "Spain · Juanjo Giménez", tag: "Minimal Dialogue Palme d'Or", note: "Palme d'Or winner. Minimal dialogue, dance and expression carry everything. Proof short film can win the world." },
+  { title: "Axe Forgets (UK 2025)", origin: "UK · Patrick Foley", tag: "African Proverb → Film", note: "An ancient African proverb turned into a profound short. Exactly the IF Media formula." },
+];
+
+function Tag({ children, color = C.amber }) {
+  return (
+    <span style={{
+      background: color + "20", border: `1px solid ${color}50`,
+      color, fontSize: 10, padding: "2px 8px", borderRadius: 20,
+      letterSpacing: 1, fontWeight: 700, textTransform: "uppercase",
+      whiteSpace: "nowrap", display: "inline-block",
+    }}>{children}</span>
+  );
+}
+
+function NavBtn({ label, active, onClick }) {
+  return (
+    <button onClick={onClick} style={{
+      background: "none", border: "none",
+      borderBottom: `2px solid ${active ? C.amber : "transparent"}`,
+      color: active ? C.white : C.muted, padding: "14px 18px",
+      cursor: "pointer", fontSize: 12, fontWeight: active ? 700 : 400,
+      letterSpacing: 1, textTransform: "uppercase", transition: "all 0.15s",
+    }}>{label}</button>
+  );
+}
+
+function Poster() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#040608");
+    bg.addColorStop(0.5, "#0D1117");
+    bg.addColorStop(1, "#080A0F");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    for (let i = 0; i < 6000; i++) {
+      const x = Math.random() * W, y = Math.random() * H;
+      ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.06})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+    const glow = ctx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, W*0.55);
+    glow.addColorStop(0, "rgba(212,148,10,0.18)");
+    glow.addColorStop(0.4, "rgba(212,148,10,0.06)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+    for (let r = 60; r < W * 0.7; r += 55) {
+      ctx.beginPath();
+      ctx.arc(W/2, H*0.42, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(212,148,10,${Math.max(0, 0.12 - r/4000)})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+    [0.05, 0.92].forEach(yPct => {
+      const y = H * yPct;
+      ctx.fillStyle = "rgba(212,148,10,0.08)";
+      ctx.fillRect(0, y, W, H * 0.045);
+      for (let x = 20; x < W - 20; x += 48) {
+        ctx.fillStyle = "rgba(212,148,10,0.15)";
+        ctx.fillRect(x, y + 5, 32, H * 0.032);
+      }
+    });
+    const ex = W/2, ey = H*0.40, ew = W*0.32, eh = W*0.09;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(ex - ew, ey);
+    ctx.bezierCurveTo(ex - ew/2, ey - eh*2, ex + ew/2, ey - eh*2, ex + ew, ey);
+    ctx.bezierCurveTo(ex + ew/2, ey + eh*2, ex - ew/2, ey + eh*2, ex - ew, ey);
+    ctx.strokeStyle = "rgba(212,148,10,0.55)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(ex, ey, ew * 0.22, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(212,148,10,0.7)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(ex, ey, ew * 0.09, 0, Math.PI * 2);
+    const pupilG = ctx.createRadialGradient(ex, ey, 0, ex, ey, ew * 0.09);
+    pupilG.addColorStop(0, "rgba(242,193,78,0.9)");
+    pupilG.addColorStop(1, "rgba(212,148,10,0.5)");
+    ctx.fillStyle = pupilG;
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.font = `bold ${Math.round(W*0.065)}px 'Courier New', monospace`;
+    ctx.textAlign = "center";
+    ctx.fillStyle = C.amber;
+    ctx.globalAlpha = 0.9;
+    ctx.fillText("[ IF ]", W/2, H * 0.18);
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    const titleGrad = ctx.createLinearGradient(0, H*0.55, 0, H*0.72);
+    titleGrad.addColorStop(0, "#F5F2EC");
+    titleGrad.addColorStop(1, "#C0B89A");
+    ctx.fillStyle = titleGrad;
+    ctx.font = `900 ${Math.round(W*0.088)}px Georgia, serif`;
+    ctx.fillText("STORIES", W/2, H * 0.60);
+    ctx.fillText("THAT STAY", W/2, H * 0.695);
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.fillStyle = C.amber;
+    ctx.font = `300 ${Math.round(W*0.022)}px 'Courier New', monospace`;
+    ctx.globalAlpha = 0.9;
+    ctx.fillText("SHORT  FILM  SERIES  ·  MORAL  STORIES  ·  VISUAL  TRUTH", W/2, H * 0.765);
+    ctx.restore();
+    ctx.save();
+    ctx.strokeStyle = "rgba(212,148,10,0.35)";
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(W*0.2, H*0.785);
+    ctx.lineTo(W*0.8, H*0.785);
+    ctx.stroke();
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(237,232,220,0.5)";
+    ctx.font = `400 ${Math.round(W*0.018)}px 'Courier New', monospace`;
+    ctx.fillText("IF  MEDIA  DEPARTMENT  ·  2026", W/2, H * 0.82);
+    ctx.restore();
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(107,120,136,0.7)";
+    ctx.font = `italic ${Math.round(W*0.016)}px Georgia, serif`;
+    ctx.fillText('"The most powerful lesson arrives in silence."', W/2, H * 0.875);
+    ctx.restore();
+  }, []);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+      <canvas ref={canvasRef} width={680} height={960} style={{
+        width: "100%", maxWidth: 480, borderRadius: 8,
+        border: `1px solid ${C.border}`,
+        boxShadow: `0 0 80px rgba(212,148,10,0.12), 0 0 8px rgba(0,0,0,0.8)`,
+      }} />
+      <p style={{ color: C.muted, fontSize: 11, letterSpacing: 1, textAlign: "center" }}>
+        IF MEDIA · OFFICIAL DEPARTMENT POSTER · 2026
+      </p>
+    </div>
+  );
+}
+
+function SeriesCard({ s, open, onToggle }) {
+  return (
+    <div onClick={onToggle} style={{
+      background: open ? C.card : "transparent",
+      border: `1px solid ${open ? s.accentColor + "60" : C.border}`,
+      borderRadius: 10, marginBottom: 10, cursor: "pointer",
+      transition: "all 0.18s", overflow: "hidden",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 18px" }}>
+        <span style={{ fontSize: 24, flexShrink: 0 }}>{s.icon}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ color: s.accentColor, fontSize: 10, letterSpacing: 2, fontWeight: 700 }}>{s.id}</span>
+            <Tag color={s.accentColor}>{s.theme}</Tag>
+            <span style={{ color: C.muted, fontSize: 10 }}>{s.format}</span>
+          </div>
+          <div style={{ color: C.white, fontWeight: 800, fontSize: 17, marginTop: 3 }}>{s.title}</div>
+          <div style={{ color: C.muted, fontSize: 12, fontStyle: "italic", marginTop: 1 }}>"{s.tagline}"</div>
+        </div>
+        <span style={{ color: open ? s.accentColor : C.dim, fontSize: 18, flexShrink: 0, display: "inline-block", transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none" }}>▾</span>
+      </div>
+      {open && (
+        <div style={{ padding: "0 18px 18px", borderTop: `1px solid ${C.border}` }}>
+          <p style={{ color: C.cream, fontSize: 13, lineHeight: 1.75, margin: "14px 0 12px" }}>{s.synopsis}</p>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: s.accentColor, fontSize: 10, letterSpacing: 2, marginBottom: 8, fontWeight: 700 }}>EPISODES</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {s.episodes.map((ep, i) => (
+                <span key={i} style={{ background: C.panel, border: `1px solid ${C.border}`, color: C.cream, padding: "4px 10px", borderRadius: 20, fontSize: 11 }}>Ep{i+1} · {ep}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{ background: s.accentColor + "12", border: `1px solid ${s.accentColor}30`, borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+            <span style={{ color: s.accentColor, fontSize: 10, letterSpacing: 2, fontWeight: 700 }}>MORAL LESSON  </span>
+            <span style={{ color: C.white, fontSize: 13, fontStyle: "italic" }}>"{s.moral}"</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ background: C.panel, borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ color: C.muted, fontSize: 10, letterSpacing: 1, marginBottom: 4 }}>INSPIRED BY</div>
+              <div style={{ color: C.cream, fontSize: 12, lineHeight: 1.6 }}>{s.inspiredBy}</div>
+            </div>
+            <div style={{ background: C.panel, borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ color: C.muted, fontSize: 10, letterSpacing: 1, marginBottom: 4 }}>PRODUCTION NOTES</div>
+              <div style={{ color: C.cream, fontSize: 12, lineHeight: 1.6 }}>{s.productionNotes}</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab] = useState("poster");
+  const [openSeries, setOpenSeries] = useState(0);
+  const tabs = [
+    { id: "poster", label: "Poster" },
+    { id: "series", label: "Series" },
+    { id: "pillars", label: "Pillars" },
+    { id: "strategy", label: "Strategy" },
+    { id: "refs", label: "References" },
+  ];
+
+  return (
+    <div style={{ background: C.ink, minHeight: "100vh", color: C.white, fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+
+      {/* HERO */}
+      <div style={{
+        background: `linear-gradient(160deg, #040608 0%, #0D1117 60%, #0A0D14 100%)`,
+        borderBottom: `1px solid ${C.border}`,
+        padding: "48px 24px 40px", textAlign: "center", position: "relative", overflow: "hidden",
+      }}>
+        {[480,320,180].map((r,i) => (
+          <div key={i} style={{
+            position: "absolute", width: r, height: r, borderRadius: "50%",
+            border: `1px solid rgba(212,148,10,${0.06 + i * 0.04})`,
+            top: "50%", left: "50%", transform: "translate(-50%,-50%)", pointerEvents: "none",
+          }} />
+        ))}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 10,
+            border: `1px solid ${C.amber}`, borderRadius: 4, padding: "4px 16px", marginBottom: 16,
+          }}>
+            <span style={{ color: C.amber, fontFamily: "monospace", fontSize: 16, fontWeight: 900, letterSpacing: 4 }}>IF</span>
+            <div style={{ width: 1, height: 16, background: C.amberDim }} />
+            <span style={{ color: C.muted, fontSize: 10, letterSpacing: 3, textTransform: "uppercase" }}>Media Dept.</span>
+          </div>
+          <h1 style={{
+            margin: "0 0 10px", fontSize: "clamp(28px,5.5vw,58px)",
+            fontWeight: 900, lineHeight: 1.05, letterSpacing: -1,
+            background: `linear-gradient(135deg, ${C.white} 30%, ${C.amberLt} 100%)`,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>Stories That<br />Stay With You</h1>
+          <p style={{ color: C.muted, fontSize: 14, maxWidth: 500, margin: "0 auto 28px", lineHeight: 1.75 }}>
+            Short film series built on silence, image, and feeling —<br />moral stories for a world that scrolls too fast.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 36, flexWrap: "wrap" }}>
+            {[["7","Series"],["35+","Episodes"],["≤ 8 min","Per Film"],["5+","Platforms"]].map(([n,l]) => (
+              <div key={l}>
+                <div style={{ color: C.amber, fontSize: 24, fontWeight: 900 }}>{n}</div>
+                <div style={{ color: C.muted, fontSize: 10, letterSpacing: 2 }}>{l.toUpperCase()}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* NAV */}
+      <div style={{ display: "flex", borderBottom: `1px solid ${C.border}`, overflowX: "auto", padding: "0 8px" }}>
+        {tabs.map(t => <NavBtn key={t.id} label={t.label} active={tab === t.id} onClick={() => setTab(t.id)} />)}
+      </div>
+
+      {/* CONTENT */}
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "32px 20px 60px" }}>
+
+        {/* POSTER */}
+        {tab === "poster" && (
+          <div>
+            <p style={{ color: C.muted, fontSize: 13, textAlign: "center", marginBottom: 28 }}>
+              Official department identity poster — film aesthetic, canvas-rendered.
+            </p>
+            <Poster />
+            <div style={{ marginTop: 40 }}>
+              <div style={{ color: C.amber, fontSize: 10, letterSpacing: 3, marginBottom: 14, fontWeight: 700 }}>BRAND PALETTE</div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {[["#D4940A","Amber Gold","Primary"],["#F5F2EC","Warm Cream","Type"],["#080A0F","Deep Ink","Background"],["#131720","Panel Dark","Cards"],["#6B7888","Steel Muted","Secondary"]].map(([hex,name,role]) => (
+                  <div key={hex} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px", minWidth: 110 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 6, background: hex, marginBottom: 8, border: "1px solid rgba(255,255,255,0.1)" }} />
+                    <div style={{ color: C.white, fontSize: 12, fontWeight: 700 }}>{name}</div>
+                    <div style={{ color: C.muted, fontSize: 10, fontFamily: "monospace" }}>{hex}</div>
+                    <div style={{ color: C.dim, fontSize: 10, marginTop: 2 }}>{role}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ marginTop: 32, background: `linear-gradient(135deg, ${C.amber}10, ${C.panel})`, border: `1px solid ${C.amber}30`, borderRadius: 12, padding: 24 }}>
+              <div style={{ color: C.amber, fontSize: 10, letterSpacing: 3, marginBottom: 10, fontWeight: 700 }}>BRAND VOICE</div>
+              <p style={{ color: C.white, fontSize: 15, lineHeight: 1.85, fontStyle: "italic" }}>
+                "We tell stories that don't need a translator. Stories where a grandmother's hands, a child's hesitation, or a stranger's quiet decision carry more meaning than a thousand words. IF Media exists to prove that the most powerful lessons arrive in silence — and that African stories, told honestly, belong to the whole world."
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* SERIES */}
+        {tab === "series" && (
+          <div>
+            <p style={{ color: C.muted, fontSize: 13, marginBottom: 20 }}>7 original series · tap any to expand the full brief.</p>
+            {SERIES.map((s,i) => (
+              <SeriesCard key={s.id} s={s} open={openSeries === i} onToggle={() => setOpenSeries(openSeries === i ? -1 : i)} />
+            ))}
+          </div>
+        )}
+
+        {/* PILLARS */}
+        {tab === "pillars" && (
+          <div>
+            <h2 style={{ color: C.white, fontSize: 20, fontWeight: 800, marginBottom: 6 }}>Production Pillars</h2>
+            <p style={{ color: C.muted, fontSize: 13, marginBottom: 28 }}>Every IF Media piece must honour all six. Non-negotiable.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14, marginBottom: 40 }}>
+              {PILLARS.map((p,i) => (
+                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "22px 18px" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: C.amber + "20", border: `1px solid ${C.amber}40`, display: "flex", alignItems: "center", justifyContent: "center", color: C.amber, fontWeight: 900, fontSize: 13, marginBottom: 12 }}>
+                    {String(i+1).padStart(2,"0")}
+                  </div>
+                  <div style={{ color: C.white, fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{p.label}</div>
+                  <div style={{ color: C.muted, fontSize: 13, lineHeight: 1.65 }}>{p.detail}</div>
+                </div>
+              ))}
+            </div>
+            <h3 style={{ color: C.white, fontSize: 16, fontWeight: 700, marginBottom: 14 }}>Content Format Mix</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { label: "No-dialogue visual films", pct: 40, color: C.amber },
+                { label: "Minimal dialogue narrative", pct: 35, color: C.sky },
+                { label: "Observational / documentary style", pct: 15, color: C.moss },
+                { label: "Voiceover + image essays", pct: 10, color: C.violet },
+              ].map(row => (
+                <div key={row.label}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ color: C.cream, fontSize: 12 }}>{row.label}</span>
+                    <span style={{ color: row.color, fontSize: 12, fontWeight: 700 }}>{row.pct}%</span>
+                  </div>
+                  <div style={{ background: C.panel, borderRadius: 4, height: 6, overflow: "hidden" }}>
+                    <div style={{ width: `${row.pct}%`, height: "100%", background: row.color, borderRadius: 4 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STRATEGY */}
+        {tab === "strategy" && (
+          <div>
+            <h2 style={{ color: C.white, fontSize: 20, fontWeight: 800, marginBottom: 6 }}>Launch Strategy</h2>
+            <p style={{ color: C.muted, fontSize: 13, marginBottom: 28 }}>A phased roadmap from pilot episode to festival circuit.</p>
+            <div style={{ marginBottom: 36 }}>
+              {PHASES.map((ph,i) => (
+                <div key={i} style={{ display: "flex", gap: 16, marginBottom: 14, alignItems: "flex-start" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: ph.color + "20", border: `2px solid ${ph.color}`, display: "flex", alignItems: "center", justifyContent: "center", color: ph.color, fontWeight: 900, fontSize: 12 }}>{i+1}</div>
+                    {i < PHASES.length - 1 && <div style={{ width: 1, height: 30, background: C.border, margin: "4px 0" }} />}
+                  </div>
+                  <div style={{ flex: 1, background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 4 }}>
+                      <span style={{ color: C.white, fontWeight: 700, fontSize: 15 }}>{ph.label}</span>
+                      <Tag color={ph.color}>{ph.period}</Tag>
+                    </div>
+                    <ul style={{ paddingLeft: 16, color: C.muted, fontSize: 13, lineHeight: 1.8 }}>
+                      {ph.steps.map((s,j) => <li key={j} style={{ color: C.cream }}>{s}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <h3 style={{ color: C.white, fontSize: 16, fontWeight: 700, marginBottom: 14 }}>Platform Strategy</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 32 }}>
+              {[
+                { p: "YouTube", use: "Full episode series + playlists", color: C.red },
+                { p: "Instagram Reels", use: "60s extracts + BTS + quote cards", color: C.violet },
+                { p: "TikTok", use: "45s cuts with on-screen moral text", color: C.sky },
+                { p: "WhatsApp", use: "Community premieres + watch parties", color: C.moss },
+                { p: "Vimeo", use: "Festival-quality archive + press kit", color: C.amber },
+                { p: "Showmax / Netflix Africa", use: "Year 2 anthology pitch", color: C.teal },
+              ].map(x => (
+                <div key={x.p} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: x.color, flexShrink: 0 }} />
+                    <span style={{ color: C.white, fontWeight: 700, fontSize: 13 }}>{x.p}</span>
+                  </div>
+                  <div style={{ color: C.muted, fontSize: 12, lineHeight: 1.6 }}>{x.use}</div>
+                </div>
+              ))}
+            </div>
+            <h3 style={{ color: C.white, fontSize: 16, fontWeight: 700, marginBottom: 14 }}>Weekly Drop Schedule</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
+              {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day,i) => (
+                <div key={day} style={{
+                  background: [1,4].includes(i) ? C.amber + "18" : C.panel,
+                  border: `1px solid ${[1,4].includes(i) ? C.amber + "40" : C.border}`,
+                  borderRadius: 8, padding: "10px 6px", textAlign: "center",
+                }}>
+                  <div style={{ color: [1,4].includes(i) ? C.amber : C.muted, fontSize: 11, fontWeight: 700 }}>{day}</div>
+                  <div style={{ color: C.muted, fontSize: 9, marginTop: 4 }}>
+                    {i === 1 ? "Full drop" : i === 4 ? "Reel + quote" : "—"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* REFERENCES */}
+        {tab === "refs" && (
+          <div>
+            <h2 style={{ color: C.white, fontSize: 20, fontWeight: 800, marginBottom: 6 }}>Research & Reference</h2>
+            <p style={{ color: C.muted, fontSize: 13, marginBottom: 28 }}>Real films and platforms that validate the IF Media vision — and set the quality bar.</p>
+            {REFS.map((r,i) => (
+              <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 18px", marginBottom: 10, display: "flex", gap: 14, alignItems: "flex-start" }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: C.amber + "18", border: `1px solid ${C.amber}30`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: C.amber, fontWeight: 900, fontSize: 13 }}>{i+1}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                    <span style={{ color: C.white, fontWeight: 700, fontSize: 14 }}>{r.title}</span>
+                    <Tag>{r.tag}</Tag>
+                  </div>
+                  <div style={{ color: C.amber, fontSize: 11, marginBottom: 5 }}>{r.origin}</div>
+                  <div style={{ color: C.muted, fontSize: 13, lineHeight: 1.65 }}>{r.note}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: 28, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 18px" }}>
+              <div style={{ color: C.muted, fontSize: 10, letterSpacing: 2, marginBottom: 8 }}>RESEARCH SOURCES</div>
+              <div style={{ color: C.muted, fontSize: 12, lineHeight: 1.8 }}>
+                UK Film Review Best 2025 · Short of the Week Best 2024 · Talking Shorts Top 3 (2024 & 2025) · Film Shortage Top 10 2025 · Afrocritik 20 Remarkable African Short Films 2025 · Script Magazine MUTE Series Interview · Pulse Africa Storytelling Techniques · Africa Magic AMVCA Short Film Category · Medium — Humanizing Africa in Film (2025)
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* FOOTER */}
+      <div style={{ borderTop: `1px solid ${C.border}`, padding: "20px 24px", textAlign: "center", color: C.dim, fontSize: 11, letterSpacing: 2 }}>
+        IF MEDIA DEPARTMENT · SHORT FILM DIVISION · CONTENT BRIEF 2026
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
